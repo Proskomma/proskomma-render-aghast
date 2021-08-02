@@ -51,7 +51,6 @@ console.log(`${nBooks} book(s) loaded in ${(Date.now() - ts) / 1000} sec`);
 ts = Date.now();
 
 const config = {};
-config.codeRoot = __dirname;
 
 doRender(pk, config).then((res) => {
     // console.log(JSON.stringify(config, null, 2));
