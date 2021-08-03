@@ -32,7 +32,7 @@ const addActions = (dInstance) => {
                 type: 'graft',
                 subType: data.subType,
                 seqId: data.payload,
-                children: [{text: `Graft (${data.subType})`}]
+                children: []
             });
         }
     );
