@@ -67,10 +67,10 @@ const addActions = (dInstance) => {
             const payload = ['lineSpace', 'eol'].includes(data.subType) ? ' ' : data.payload;
             const lastBlock = renderer.config.aghast.children[renderer.config.aghast.children.length - 1];
                 const lastBlockNode = lastBlock.children[lastBlock.children.length - 1];
-                if (lastBlockNode && 'text' in lastBlockNode) {
-                    lastBlockNode.text += payload;
+                if (lastBlockNode && lastBlockNode.type === 'tokens') {
+                    lastBlockNode.children[0].text += payload;
                 } else {
-                    lastBlock.children.push({text: payload});
+                    lastBlock.children.push( { type: 'tokens', children: [ {text: payload} ] } );
                 }
         }
     );
