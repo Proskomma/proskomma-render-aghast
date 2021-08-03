@@ -29,10 +29,10 @@ const addActions = (dInstance) => {
         context => true,
         (renderer, context, data) => {
             renderer.config.aghast.children.push({
-                type: 'graft',
+                type: 'blockGraft',
                 subType: data.subType,
                 seqId: data.payload,
-                children: [{text: data.subType}]
+                children: [{text: `>> ${data.subType[0].toUpperCase()}${data.subType.substring(1)}`}]
             });
         }
     );
@@ -55,7 +55,7 @@ const addActions = (dInstance) => {
             const markElement = {
                 type: 'mark',
                 scope: data.payload,
-                children: [{text: data.payload.split('/')[1]}]
+                children: [{text: `${data.payload.split('/')[0][0]} ${data.payload.split('/')[1]}`}]
             };
                 lastBlock.children.push(markElement);
             }
