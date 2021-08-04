@@ -1,5 +1,3 @@
-// node make_aghast.js <usfm_dir> [ <docSetId> [ <bookCode> ] ]
-
 const fse = require('fs-extra');
 const path = require('path');
 
@@ -11,6 +9,12 @@ const doRender = async (pk, config) => {
     const thenFunction = result => {
         console.log(`Query processed in  ${(Date.now() - ts) / 1000} sec`);
         ts = Date.now();
+        const document = result.docSets
+            .filter(ds => !docSet || ds.id === docSet)[0]
+            .documents
+                .filter(d => d.headers.filter(h => h.key === 'bookCode')[0].value === ((bookCode && bookCode) || 'MRK'))[0];
+        const sequenceId = document.sequences.filter(s => s.type === (sequenceType || 'main'))[0].id;
+        config.sequenceId = sequenceId;
         const model = aghastModel(result, config);
         model.render({
             actions: {},
@@ -25,9 +29,14 @@ const doRender = async (pk, config) => {
         .then(thenFunction)
 };
 
+if (process.argv.length < 3 || process.argv.length > 6) {
+    console.log("USAGE: node make_aghast.js <usfm_path> [ <sequenceType> [ <docSetId> [ <bookCode> ] ] ]");
+    process.exit(1);
+}
 const fqSourceDir = path.resolve(__dirname, process.argv[2]);
-const docSet = process.argv[3];
-const bookCode = process.argv[4];
+const sequenceType = process.argv[3];
+const docSet = process.argv[4];
+const bookCode = process.argv[5];
 
 let ts = Date.now();
 let nBooks = 0;
