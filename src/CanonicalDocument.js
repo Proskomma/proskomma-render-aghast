@@ -73,6 +73,23 @@ const addActions = (dInstance) => {
         }
     );
     dInstance.addAction(
+        'inlineGraft',
+        context => true,
+        (renderer, context, data) => {
+            if (selectedSequence(renderer, context)) {
+                const lastBlock = renderer.config.aghast.children[renderer.config.aghast.children.length - 1];
+                const inlineElement = {
+                    type: 'inlineGraft',
+                    subType: data.subType,
+                    seqId: data.payload,
+                    children: [{text: `>> ${data.subType[0].toUpperCase()}${data.subType.substring(1)}`}]
+                };
+                lastBlock.children.push(inlineElement);
+            }
+            renderer.renderSequenceId(data.payload);
+        }
+    );
+    dInstance.addAction(
         'token',
         context => true,
         (renderer, context, data) => {
@@ -80,7 +97,7 @@ const addActions = (dInstance) => {
                 const payload = ['lineSpace', 'eol'].includes(data.subType) ? ' ' : data.payload;
                 const lastBlock = renderer.config.aghast.children[renderer.config.aghast.children.length - 1];
                 const lastBlockNode = lastBlock.children[lastBlock.children.length - 1];
-                if (lastBlockNode && 'text' in lastBlockNode) {
+                if (lastBlockNode && 'text' in lastBlockNode && !('type' in lastBlockNode)) {
                     lastBlockNode.text += payload;
                 } else {
                     lastBlock.children.push({text: payload});
