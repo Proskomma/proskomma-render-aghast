@@ -1,6 +1,6 @@
 {
   "name": "proskomma-render-aghast",
-  "version": "0.5.11",
+  "version": "0.5.12",
   "description": "Generator of Slate-friendly Scripture JSON, based on proskomma-render",
   "main": "src/index.js",
   "directories": {
@@ -20,10 +20,10 @@
   },
   "homepage": "https://github.com/Proskomma/proskomma-render-aghast#readme",
   "dependencies": {
-    "proskomma-render": "^0.5.3"
+    "proskomma-render": "^0.5.4"
   },
   "devDependencies": {
     "fs-extra": "^10.0.0",
-    "proskomma": "^0.4.50"
+    "proskomma": "^0.4.54"
   }
 }
