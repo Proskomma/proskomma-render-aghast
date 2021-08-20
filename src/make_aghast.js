@@ -5,6 +5,8 @@ const {Proskomma} = require('proskomma');
 const aghastModel = require('./index');
 const {ScriptureParaModelQuery} = require('proskomma-render');
 
+const defaultBook = "PSA";
+
 const doRender = async (pk, config) => {
     const thenFunction = result => {
         console.log(`Query processed in  ${(Date.now() - ts) / 1000} sec`);
@@ -12,14 +14,14 @@ const doRender = async (pk, config) => {
         const document = result.docSets
             .filter(ds => !docSet || ds.id === docSet)[0]
             .documents
-                .filter(d => d.headers.filter(h => h.key === 'bookCode')[0].value === ((bookCode && bookCode) || 'MRK'))[0];
+                .filter(d => d.headers.filter(h => h.key === 'bookCode')[0].value === ((bookCode && bookCode) || defaultBook))[0];
         const sequenceId = document.sequences.filter(s => s.type === (sequenceType || 'main'))[0].id;
         config.sequenceId = sequenceId;
         const model = aghastModel(result, config);
         model.render({
             actions: {},
             docSet: docSet || "xxx_yyy",
-            document: docIds[bookCode || "MRK"]}
+            document: docIds[bookCode || defaultBook]}
         );
         console.log(`DocSet rendered in  ${(Date.now() - ts) / 1000} sec`);
         console.log(model.logString());

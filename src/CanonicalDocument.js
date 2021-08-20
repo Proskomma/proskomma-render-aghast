@@ -20,6 +20,7 @@ const addActions = (dInstance) => {
         context => true,
         (renderer, context) => {
             renderer.config.aghast = {type: 'sequence', children: []};
+            renderer.config.openSpans = new Set([]);
         }
     );
     dInstance.addAction(
@@ -73,6 +74,19 @@ const addActions = (dInstance) => {
         }
     );
     dInstance.addAction(
+        'scope',
+        (context, data) => data.payload.startsWith('span/') && ['nd', 'add'].includes(data.payload.split('/')[1]),
+        (renderer, context, data) => {
+            if (selectedSequence(renderer, context)) {
+                if (data.subType === 'start') {
+                    renderer.config.openSpans.add(data.payload.split('/')[1]);
+                } else {
+                    renderer.config.openSpans.delete(data.payload.split('/')[1]);
+                }
+            }
+        }
+    );
+    dInstance.addAction(
         'inlineGraft',
         context => true,
         (renderer, context, data) => {
@@ -94,13 +108,37 @@ const addActions = (dInstance) => {
         context => true,
         (renderer, context, data) => {
             if (selectedSequence(renderer, context)) {
+                const eqSet = (as, bs) => {
+                    if (as.size !== bs.size) {
+                        return false;
+                    }
+                    for (const a of as) {
+                        if (!bs.has(a)) {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
                 const payload = ['lineSpace', 'eol'].includes(data.subType) ? ' ' : data.payload;
                 const lastBlock = renderer.config.aghast.children[renderer.config.aghast.children.length - 1];
                 const lastBlockNode = lastBlock.children[lastBlock.children.length - 1];
-                if (lastBlockNode && 'text' in lastBlockNode && !('type' in lastBlockNode)) {
+                const lastSpans = new Set(
+                    Object.keys(lastBlockNode || [])
+                    .filter(k => !['text', 'children', 'type', 'scope'].includes(k))
+                );
+                if (
+                    lastBlockNode &&
+                    'text' in lastBlockNode &&
+                    !('type' in lastBlockNode)
+                    && eqSet(renderer.config.openSpans, lastSpans)
+                ) {
                     lastBlockNode.text += payload;
                 } else {
-                    lastBlock.children.push({text: payload});
+                    const newTextNode = {text: payload};
+                    for (const span of Array.from(renderer.config.openSpans)) {
+                        newTextNode[span] = true;
+                    }
+                    lastBlock.children.push(newTextNode);
                 }
             }
         }
