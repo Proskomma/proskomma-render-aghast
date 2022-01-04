@@ -5,11 +5,10 @@ const {Proskomma} = require('proskomma');
 const aghastModel = require('./index');
 const {ScriptureParaModelQuery} = require('proskomma-render');
 
-const defaultBook = "PSA";
+const defaultBook = "MRK";
 
 const doRender = async (pk, config) => {
     const thenFunction = result => {
-        console.log(`Query processed in  ${(Date.now() - ts) / 1000} sec`);
         ts = Date.now();
         const document = result.docSets
             .filter(ds => !docSet || ds.id === docSet)[0]
